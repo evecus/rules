@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain_suffix": [
+        "docker.io",
+        "ping0.cc",
+        "speedtest.net",
+        "zeabur.com",
+        "dns.google",
+        "1dot1dot1dot1.cloudflare-dns.com",
+        "dot.sb",
+        "dns.umbrella.com",
+        "dns.quad9.net",
+        "cloudflare-dns.com",
+        "doh.dns.sb",
+        "doh.opendns.com",
+        "hk-hkg.doh.sb"
+      ]
+    },
+    {
+      "domain_keyword": [
+        "1e100",
+        "googlevideo",
+        "docker",
+        "debian",
+        "ubuntu",
+        "armbian"
+      ]
+    }
+  ]
+}

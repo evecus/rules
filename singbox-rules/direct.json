@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain_suffix": [
+        "localdomain",
+        "example",
+        "invalid",
+        "localhost",
+        "test",
+        "local",
+        "lan",
+        "zte.home",
+        "my.router",
+        "ts.net",
+        "home.arpa",
+        "hiwifi.com",
+        "tplinkwifi.net",
+        "tendawifi.com",
+        "leike.cc",
+        "plex.direct",
+        "router.ctc",
+        "phicomm.me",
+        "ryplay11.com",
+        "955500.xyz",
+        "668599.xyz",
+        "166001.xyz",
+        "977779.xyz",
+        "dytt-cinema.com",
+        "tyyszywvod5.com",
+        "fengbao8.com",
+        "360xyz.vip",
+        "bdzybf22.com",
+        "cdn.wicdn88.com",
+        "freecloud.ltd",
+        "acl4.ssr",
+        "dnshe.com",
+        "dash.cloudflare.com"
+      ]
+    },
+    {
+      "domain": [
+        "www.bing.com",
+        "dash.cloudflare.com",
+        "cn.bing.com"
+      ]
+    }
+  ]
+}
