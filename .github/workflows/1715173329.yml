@@ -2,8 +2,8 @@ name: 1715173329规则转换
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "55 22 * * *"
+ # schedule:
+   # - cron: "55 22 * * *"
 
 permissions:
   contents: write
