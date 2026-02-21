@@ -1,0 +1,71 @@
+name: MetaCubeX规则下载
+
+on:
+  schedule:
+    - cron: '30 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout destination repository
+        uses: actions/checkout@v4
+        with:
+          path: dest
+
+      - name: Clone source repo (meta branch)
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/MetaCubeX/meta-rules-dat.git -b meta source-meta
+          cd source-meta
+          git sparse-checkout set geo/geosite geo/geoip
+
+      - name: Clone source repo (sing branch)
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/MetaCubeX/meta-rules-dat.git -b sing source-sing
+          cd source-sing
+          git sparse-checkout set geo/geosite geo/geoip
+
+      - name: Organize and Copy Files (ONLY mrs & srs)
+        run: |
+          # 清空旧文件，避免残留 json/yaml
+          rm -rf dest/MetaCubeX
+
+          # 创建目录
+          mkdir -p dest/MetaCubeX/mihomo/geosite
+          mkdir -p dest/MetaCubeX/mihomo/geoip
+          mkdir -p dest/MetaCubeX/sing-box/geosite
+          mkdir -p dest/MetaCubeX/sing-box/geoip
+
+          # 1️⃣ meta 分支 —— 只复制 .mrs
+          find source-meta/geo/geosite -maxdepth 1 -type f -name "*.mrs" \
+            -exec cp {} dest/MetaCubeX/mihomo/geosite/ \;
+
+          find source-meta/geo/geoip -maxdepth 1 -type f -name "*.mrs" \
+            -exec cp {} dest/MetaCubeX/mihomo/geoip/ \;
+
+          # 2️⃣ sing 分支 —— 只复制 .srs
+          find source-sing/geo/geosite -maxdepth 1 -type f -name "*.srs" \
+            -exec cp {} dest/MetaCubeX/sing-box/geosite/ \;
+
+          find source-sing/geo/geoip -maxdepth 1 -type f -name "*.srs" \
+            -exec cp {} dest/MetaCubeX/sing-box/geoip/ \;
+
+      - name: Commit and Push
+        run: |
+          cd dest
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # 只添加 mrs 和 srs
+          find . -type f \( -name "*.mrs" -o -name "*.srs" \) -exec git add {} +
+
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Auto-update GeoData (mrs & srs only): $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+          else
+            echo "No changes detected, skipping push."
+          fi
