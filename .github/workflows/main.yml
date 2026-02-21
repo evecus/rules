@@ -1,0 +1,127 @@
+name: 统一规则集维护中心
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "42 23 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+
+      - name: 安装必要工具
+        run: |
+          wget https://github.com/SagerNet/sing-box/releases/download/v1.12.17/sing-box-1.12.17-linux-amd64.tar.gz
+          tar -xzf sing-box-1.12.17-linux-amd64.tar.gz
+          mv sing-box-1.12.17-linux-amd64/sing-box /usr/local/bin/
+          wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz
+          gunzip mihomo-linux-amd64-v1.19.17.gz
+          mv mihomo-linux-amd64-v1.19.17 mihomo
+          chmod +x mihomo
+          sudo mv mihomo /usr/local/bin/mihomo
+
+      - name: 自动创建目录
+        run: mkdir -p singbox-rules mihomo-rules temp_work temp_build temp_ip
+
+      # =============================================================
+      # 1. IP 规则处理 (CN全量/精简, 外网FB/GG/TW/TG)
+      # =============================================================
+      - name: 处理所有 IP 规则
+        run: |
+          set -euo pipefail
+          # A. 中国 IP (官方+社区)
+          curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/cn.json" -o singbox-rules/cn_ip.json
+          jq '.rules[0] |= {ip_cidr: [.ip_cidr[] | select(contains(":") | not)]}' singbox-rules/cn_ip.json > singbox-rules/cn_ip4.json
+          curl -L "https://fastly.jsdelivr.net/gh/1715173329/IPCIDR-CHINA@rule-set/cn.srs" -o temp_work/cn_lite_raw.srs
+          sing-box rule-set decompile --output singbox-rules/cn_ip-lite.json temp_work/cn_lite_raw.srs
+          jq '.rules[0] |= {ip_cidr: [.ip_cidr[] | select(contains(":") | not)]}' singbox-rules/cn_ip-lite.json > singbox-rules/cn_ip4-lite.json
+          
+          # B. 外网 IP (合并 FB,GG,TW,TG)
+          IP_FILES=("facebook.yaml" "google.yaml" "twitter.yaml" "telegram.yaml")
+          for file in "${IP_FILES[@]}"; do
+            curl -sL "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/$file" -o "temp_ip/$file"
+            grep -E '^\s*-\s*' "temp_ip/$file" | sed 's/^[[:space:]]*- //' >> temp_ip/all_raw_ips.txt
+          done
+          grep -v ":" temp_ip/all_raw_ips.txt | sort -u > temp_ip/v4.txt || true
+          grep ":" temp_ip/all_raw_ips.txt | sort -u > temp_ip/v6.txt || true
+          jq -n --rawfile v4 temp_ip/v4.txt --rawfile v6 temp_ip/v6.txt '{version: 2, rules: [{ip_cidr: [($v4|split("\n")[]), ($v6|split("\n")[])] | map(select(length>0))}]}' > singbox-rules/foreign_ip.json
+          jq -n --rawfile v4 temp_ip/v4.txt '{version: 2, rules: [{ip_cidr: ($v4|split("\n")|map(select(length>0)))}]}' > singbox-rules/foreign_ip4.json
+
+          # 统一转 YAML
+          for f in cn_ip cn_ip4 cn_ip-lite cn_ip4-lite foreign_ip foreign_ip4; do
+            echo "payload:" > "mihomo-rules/$f.yaml"
+            jq -r '.rules[].ip_cidr[]?' "singbox-rules/$f.json" | sed 's/^/  - /' >> "mihomo-rules/$f.yaml"
+          done
+
+      # =============================================================
+      # 2. 域名规则处理 (CN精简, 外网精简, 广告精简)
+      # =============================================================
+      - name: 处理精简/修复版域名规则
+        run: |
+          set -euo pipefail
+          # A. cn_domain-lite (清洗点号)
+          curl -L "https://fastly.jsdelivr.net/gh/1715173329/sing-geosite@rule-set-unstable/geosite-geolocation-cn.srs" -o temp_work/cn_dom_raw.srs
+          sing-box rule-set decompile --output temp_work/raw_cn_dom.json temp_work/cn_dom_raw.srs
+          jq '{version: .version, rules: [.rules[] | {domain: (.domain | map(sub("^\\.+"; ""))), domain_suffix: (.domain_suffix | map(sub("^\\.+"; "")))} | del(..|nulls)]}' temp_work/raw_cn_dom.json > singbox-rules/cn_domain-lite.json
+          
+          # B. foreign_domain-lite (19个分类提取)
+          FILES=("category-ai-!cn.yaml" "discord.yaml" "facebook.yaml" "github.yaml" "netflix.yaml" "google.yaml" "instagram.yaml" "paypal.yaml" "reddit.yaml" "grok.yaml" "spotify.yaml" "tiktok.yaml" "twitter.yaml" "whatsapp.yaml" "openai.yaml" "youtube.yaml" "geogle-gemini.yaml" "telegram.yaml" "claude.yaml")
+          for file in "${FILES[@]}"; do
+            curl -sL "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/$file" -o "temp_work/$file"
+            grep -E '^\s*-\s*"?\+\.' "temp_work/$file" | sed -E 's/^[[:space:]]*- "?\+\.//; s/"$//; s/^\.*//' >> temp_build/suffix.txt || true
+            grep -E '^\s*-\s*[^+. ]' "temp_work/$file" | grep -v "payload:" | sed -E 's/^[[:space:]]*- "//; s/^[[:space:]]*- //; s/"$//' >> temp_build/exact.txt || true
+          done
+          sort -u temp_build/suffix.txt -o temp_build/s.txt; sort -u temp_build/exact.txt -o temp_build/e.txt
+          jq -n --rawfile s temp_build/s.txt --rawfile e temp_build/e.txt '{version:2, rules:[{domain:($e|split("\n")|map(select(length>0))), domain_suffix:($s|split("\n")|map(select(length>0)))}]}' > singbox-rules/foreign_domain-lite.json
+
+          # C. ads_domain-lite (官方全广告分类)
+          curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ads-all.json" -o singbox-rules/ads_domain-lite.json
+
+          # 统一生成 YAML 并清洗前导点
+          for f in cn_domain-lite foreign_domain-lite ads_domain-lite; do
+            echo "payload:" > "mihomo-rules/$f.yaml"
+            jq -r '.rules[].domain_suffix[]?' "singbox-rules/$f.json" | sed 's/^\.*//; s/^/  - +./' >> "mihomo-rules/$f.yaml" || true
+            jq -r '.rules[].domain[]?' "singbox-rules/$f.json" | sed 's/^\.*//; s/^/  - /' >> "mihomo-rules/$f.yaml" || true
+          done
+
+      # =============================================================
+      # 3. 全量域名同步 (!cn, cn, ads全量)
+      # =============================================================
+      - name: 处理全量域名规则
+        run: |
+          set -euo pipefail
+          # A. foreign_domain (全量!cn + 清洗)
+          curl -L "https://fastly.jsdelivr.net/gh/1715173329/sing-geosite@rule-set-unstable/geosite-geolocation-!cn.srs" -o temp_work/f_raw.srs
+          sing-box rule-set decompile --output temp_work/f_raw.json temp_work/f_raw.srs
+          jq '{version: .version, rules: [.rules[] | {domain: (.domain | map(sub("^\\.+"; ""))), domain_suffix: (.domain_suffix | map(sub("^\\.+"; "")))} | del(..|nulls)]}' temp_work/f_raw.json > singbox-rules/foreign_domain.json
+          echo "payload:" > mihomo-rules/foreign_domain.yaml
+          jq -r '.rules[].domain_suffix[]?' singbox-rules/foreign_domain.json | sed 's/^\.*//; s/^/  - +./' >> mihomo-rules/foreign_domain.yaml
+          jq -r '.rules[].domain[]?' singbox-rules/foreign_domain.json | sed 's/^\.*//; s/^/  - /' >> mihomo-rules/foreign_domain.yaml
+
+          # B. 其他全量下载
+          curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.yaml" -o mihomo-rules/cn_domain.yaml
+          curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.json" -o singbox-rules/cn_domain.json
+          curl -L "https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomo.yaml" -o mihomo-rules/ads_domain.yaml
+          curl -L "https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksingbox.json" -o singbox-rules/ads_domain.json
+
+      # =============================================================
+      # 4. 统一编译并上传
+      # =============================================================
+      - name: 编译与提交
+        run: |
+          for f in singbox-rules/*.json; do sing-box rule-set compile --output "${f%.json}.srs" "$f"; done
+          for f in mihomo-rules/*.yaml; do
+            TYPE=$([[ "$f" == *"ip"* ]] && echo "ipcidr" || echo "domain")
+            mihomo convert-ruleset "$TYPE" yaml "$f" "${f%.yaml}.mrs"
+          done
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add singbox-rules/* mihomo-rules/*
+          git diff --cached --quiet || (git commit -m "chore: 完整同步全量/精简 IP 及域名规则 $(date +'%Y-%m-%d %H:%M')" && git push)
