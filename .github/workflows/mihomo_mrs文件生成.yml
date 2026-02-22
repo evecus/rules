@@ -24,7 +24,7 @@ jobs:
 
       - name: Find and convert rule files
         run: |
-          RULE_DIR="mihomo-rules"
+          RULE_DIR="mihomo"
 
           find "$RULE_DIR" -type f \( -name "*_domain.yaml" -o -name "*_domain.text" -o -name "*_ip.yaml" -o -name "*_ip.text" \) | while read FILE; do
             BASENAME=$(basename "$FILE")
