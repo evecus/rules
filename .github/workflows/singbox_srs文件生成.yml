@@ -29,7 +29,7 @@ jobs:
 
     - name: Compile JSON → SRS
       run: |
-        cd singbox-rules
+        cd sing-box
         for file in *.json; do
           [ -f "$file" ] || continue
           echo "Compiling $file → ${file%.json}.srs"
@@ -44,6 +44,6 @@ jobs:
         git config user.name "GitHub Action"
         git config user.email "action@github.com"
 
-        git add singbox-rules/*.srs
+        git add sing-box/*.srs
         git commit -m "Update SRS (Auto compiled)" || echo "No changes."
         git push origin main
