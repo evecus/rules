@@ -23,9 +23,13 @@ jobs:
           mv sing-box-1.12.17-linux-amd64/sing-box /usr/local/bin/
           wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz
           gunzip mihomo-linux-amd64-v1.19.17.gz
-          mv mihomo-linux-amd64-v1.19.17 mihomo
-          chmod +x mihomo
-          sudo mv mihomo /usr/local/bin/mihomo
+          chmod +x mihomo-linux-amd64-v1.19.17
+          # 统一移动到 /usr/bin/ 确保全局可见
+          sudo mv mihomo-linux-amd64-v1.19.17 /usr/local/bin/mihomo
+          
+          # 验证安装 (这一步很重要，如果报错会直接在这里停止)
+          sing-box version
+          mihomo -v
 
       - name: 自动创建目录
         run: mkdir -p sing-box mihomo temp_work temp_build temp_ip
