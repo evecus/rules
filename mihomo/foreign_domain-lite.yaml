@@ -1994,6 +1994,7 @@ payload:
   - performanceparameters.googleapis.com
   - pki-goog.l.google.com
   - pki.google.com
+  - ppl-ai-file-upload.s3.amazonaws.com
   - pplx-res.cloudinary.com
   - preprod-publicca.googleapis.com
   - prod-controlbe.floonet.goog
