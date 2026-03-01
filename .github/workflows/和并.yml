@@ -1,0 +1,154 @@
+name: 合并proxydomain
+
+on:
+  workflow_dispatch:
+    inputs:
+      do_json:
+        description: '是否合并 JSON (勾选表示是)'
+        type: boolean
+        default: true
+      do_yaml:
+        description: '是否合并 YAML (勾选表示是)'
+        type: boolean
+        default: true
+      json_urls:
+        description: 'JSON 链接 (空格分隔，不填则使用预设)'
+        required: false
+      yaml_urls:
+        description: 'YAML 链接 (空格分隔，不填则使用预设)'
+        required: false
+      json_dir:
+        description: 'JSON 输出目录'
+        required: false
+        default: 'sing-box'
+      yaml_dir:
+        description: 'YAML 输出目录'
+        required: false
+        default: 'mihomo'
+      json_filename:
+        description: 'JSON 文件名'
+        required: false
+        default: 'foreign_domain-all'
+      yaml_filename:
+        description: 'YAML 文件名'
+        required: false
+        default: 'foreign_domain-all'
+
+jobs:
+  merge_process:
+    runs-on: ubuntu-latest
+    env:
+      # ==========================================
+      # 预设链接集
+      # ==========================================
+      DEFAULT_JSON_URLS: |
+        https://raw.githubusercontent.com/evecus/files/refs/heads/main/singbox-rules/proxy.json
+        https://raw.githubusercontent.com/evecus/files/refs/heads/main/singbox-rules/foreign_domain-lite.json
+        https://raw.githubusercontent.com/evecus/files/refs/heads/main/singbox-rules/foreign_domain.json
+      DEFAULT_YAML_URLS: |
+        https://raw.githubusercontent.com/evecus/files/refs/heads/main/mihomo-rules/foreign_domain-lite.yaml
+        https://raw.githubusercontent.com/evecus/files/refs/heads/main/mihomo-rules/foreign_domain.yaml
+      # ==========================================
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests PyYAML
+
+      - name: Run Universal Merge Script
+        shell: python
+        run: |
+          import json
+          import requests
+          import yaml
+          import os
+
+          # 1. 获取输入逻辑
+          # 解析布尔值输入
+          do_json = "${{ github.event.inputs.do_json }}" == "true"
+          do_yaml = "${{ github.event.inputs.do_yaml }}" == "true"
+          
+          input_json = "${{ github.event.inputs.json_urls }}".strip()
+          input_yaml = "${{ github.event.inputs.yaml_urls }}".strip()
+          
+          json_urls = input_json.split() if input_json else os.environ.get('DEFAULT_JSON_URLS', '').split()
+          yaml_urls = input_yaml.split() if input_yaml else os.environ.get('DEFAULT_YAML_URLS', '').split()
+          
+          j_dir = "${{ github.event.inputs.json_dir }}" or "123"
+          y_dir = "${{ github.event.inputs.yaml_dir }}" or "456"
+          
+          json_file = "${{ github.event.inputs.json_filename }}" or "merged_rules"
+          yaml_file = "${{ github.event.inputs.yaml_filename }}" or "merged_rules"
+
+          # --- 处理 JSON 合并 ---
+          if do_json and json_urls:
+              print(f"开始处理 JSON，共 {len(json_urls)} 个链接")
+              os.makedirs(j_dir, exist_ok=True)
+              
+              all_rules = []
+              ver = 2
+              for url in json_urls:
+                  try:
+                      r = requests.get(url.strip(), timeout=30)
+                      d = r.json()
+                      if 'version' in d: ver = d['version']
+                      if 'rules' in d: all_rules.extend(d['rules'])
+                  except Exception as e: print(f"JSON 错误 {url}: {e}")
+              
+              # ...（此处保留之前的智能去重逻辑，为了节省篇幅简写，实际使用时请完整复制）
+              merged_json_data = {}
+              for rule in all_rules:
+                  list_keys = tuple(sorted([k for k, v in rule.items() if isinstance(v, list)]))
+                  if not list_keys: continue
+                  if list_keys not in merged_json_data:
+                      merged_json_data[list_keys] = {k: set() for k in list_keys}
+                      for k, v in rule.items():
+                          if not isinstance(v, list): merged_json_data[list_keys][k] = v
+                  for k in list_keys: merged_json_data[list_keys][k].update(rule.get(k, []))
+              
+              final_json_rules = []
+              for keys, content in merged_json_data.items():
+                  new_rule = {k: (sorted(list(v)) if isinstance(v, set) else v) for k, v in content.items()}
+                  final_json_rules.append(new_rule)
+              
+              json_out_name = json_file if json_file.endswith('.json') else f"{json_file}.json"
+              with open(os.path.join(j_dir, json_out_name), 'w', encoding='utf-8') as f:
+                  json.dump({"version": ver, "rules": final_json_rules}, f, indent=2, ensure_ascii=False)
+              print(f"JSON 已保存至: {os.path.join(j_dir, json_out_name)}")
+          else:
+              print("已跳过 JSON 合并")
+
+          # --- 处理 YAML 合并 ---
+          if do_yaml and yaml_urls:
+              print(f"开始处理 YAML，共 {len(yaml_urls)} 个链接")
+              os.makedirs(y_dir, exist_ok=True)
+              
+              all_payloads = set()
+              for url in yaml_urls:
+                  try:
+                      r = requests.get(url.strip(), timeout=30)
+                      d = yaml.safe_load(r.text)
+                      if d and 'payload' in d: all_payloads.update(d['payload'])
+                  except Exception as e: print(f"YAML 错误 {url}: {e}")
+              
+              yaml_out_name = yaml_file if (yaml_file.endswith('.yaml') or yaml_file.endswith('.yml')) else f"{yaml_file}.yaml"
+              with open(os.path.join(y_dir, yaml_out_name), 'w', encoding='utf-8') as f:
+                  yaml.dump({"payload": sorted(list(all_payloads))}, f, default_flow_style=False, allow_unicode=True)
+              print(f"YAML 已保存至: {os.path.join(y_dir, yaml_out_name)}")
+          else:
+              print("已跳过 YAML 合并")
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Auto-merge rules: $(date +'%Y-%m-%d %H:%M')" || echo "No changes"
+          git push origin main
