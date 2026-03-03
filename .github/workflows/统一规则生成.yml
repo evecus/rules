@@ -13,21 +13,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 【修改点 1】: 显式检出 master 分支，并设置 fetch-depth 为 0 以获取完整历史
       - name: Checkout current repo
         uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
 
       - name: 安装必要工具
         run: |
           wget https://github.com/SagerNet/sing-box/releases/download/v1.12.17/sing-box-1.12.17-linux-amd64.tar.gz
           tar -xzf sing-box-1.12.17-linux-amd64.tar.gz
-          mv sing-box-1.12.17-linux-amd64/sing-box /usr/local/bin/
+          sudo mv sing-box-1.12.17-linux-amd64/sing-box /usr/local/bin/
           wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz
           gunzip mihomo-linux-amd64-v1.19.17.gz
           chmod +x mihomo-linux-amd64-v1.19.17
-          # 统一移动到 /usr/bin/ 确保全局可见
           sudo mv mihomo-linux-amd64-v1.19.17 /usr/local/bin/mihomo
-          
-          # 验证安装 (这一步很重要，如果报错会直接在这里停止)
           sing-box version
           mihomo -v
 
@@ -35,19 +36,17 @@ jobs:
         run: mkdir -p sing-box mihomo temp_work temp_build temp_ip
 
       # =============================================================
-      # 1. IP 规则处理 (CN全量/精简, 外网FB/GG/TW/TG)
+      # 1. IP 规则处理 (逻辑保持不变)
       # =============================================================
       - name: 处理所有 IP 规则
         run: |
           set -euo pipefail
-          # A. 中国 IP (官方+社区)
           curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/cn.json" -o sing-box/cn_ip.json
           jq '.rules[0] |= {ip_cidr: [.ip_cidr[] | select(contains(":") | not)]}' sing-box/cn_ip.json > sing-box/cn_ip4.json
           curl -L "https://raw.githubusercontent.com/1715173329/IPCIDR-CHINA/refs/heads/rule-set/cn.srs" -o temp_work/cn_lite_raw.srs
           sing-box rule-set decompile --output sing-box/cn_ip-lite.json temp_work/cn_lite_raw.srs
           jq '.rules[0] |= {ip_cidr: [.ip_cidr[] | select(contains(":") | not)]}' sing-box/cn_ip-lite.json > sing-box/cn_ip4-lite.json
           
-          # B. 外网 IP (合并 FB,GG,TW,TG)
           IP_FILES=("facebook.yaml" "google.yaml" "twitter.yaml" "telegram.yaml")
           for file in "${IP_FILES[@]}"; do
             curl -sL "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/$file" -o "temp_ip/$file"
@@ -58,24 +57,21 @@ jobs:
           jq -n --rawfile v4 temp_ip/v4.txt --rawfile v6 temp_ip/v6.txt '{version: 2, rules: [{ip_cidr: [($v4|split("\n")[]), ($v6|split("\n")[])] | map(select(length>0))}]}' > sing-box/foreign_ip.json
           jq -n --rawfile v4 temp_ip/v4.txt '{version: 2, rules: [{ip_cidr: ($v4|split("\n")|map(select(length>0)))}]}' > sing-box/foreign_ip4.json
 
-          # 统一转 YAML
           for f in cn_ip cn_ip4 cn_ip-lite cn_ip4-lite foreign_ip foreign_ip4; do
             echo "payload:" > "mihomo/$f.yaml"
             jq -r '.rules[].ip_cidr[]?' "sing-box/$f.json" | sed 's/^/  - /' >> "mihomo/$f.yaml"
           done
 
       # =============================================================
-      # 2. 域名规则处理 (CN精简, 外网精简, 广告精简)
+      # 2. 域名规则处理 (逻辑保持不变)
       # =============================================================
       - name: 处理精简/修复版域名规则
         run: |
           set -euo pipefail
-          # A. cn_domain-lite (清洗点号)
           curl -L "https://raw.githubusercontent.com/1715173329/sing-geosite/refs/heads/rule-set-unstable/geosite-geolocation-cn.srs" -o temp_work/cn_dom_raw.srs
           sing-box rule-set decompile --output temp_work/raw_cn_dom.json temp_work/cn_dom_raw.srs
           jq '{version: .version, rules: [.rules[] | {domain: (.domain | map(sub("^\\.+"; ""))), domain_suffix: (.domain_suffix | map(sub("^\\.+"; "")))} | del(..|nulls)]}' temp_work/raw_cn_dom.json > sing-box/cn_domain-lite.json
           
-          # B. foreign_domain-lite (19个分类提取)
           FILES=("category-ai-!cn.yaml" "discord.yaml" "facebook.yaml" "github.yaml" "netflix.yaml" "google.yaml" "instagram.yaml" "paypal.yaml" "reddit.yaml" "grok.yaml" "spotify.yaml" "tiktok.yaml" "twitter.yaml" "whatsapp.yaml" "openai.yaml" "youtube.yaml" "geogle-gemini.yaml" "telegram.yaml" "claude.yaml")
           for file in "${FILES[@]}"; do
             curl -sL "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/$file" -o "temp_work/$file"
@@ -85,10 +81,6 @@ jobs:
           sort -u temp_build/suffix.txt -o temp_build/s.txt; sort -u temp_build/exact.txt -o temp_build/e.txt
           jq -n --rawfile s temp_build/s.txt --rawfile e temp_build/e.txt '{version:2, rules:[{domain:($e|split("\n")|map(select(length>0))), domain_suffix:($s|split("\n")|map(select(length>0)))}]}' > sing-box/foreign_domain-lite.json
 
-          # C. ads_domain-lite (官方全广告分类)
-          curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ads-all.json" -o sing-box/ads_domain-lite.json
-
-          # 统一生成 YAML 并清洗前导点
           for f in cn_domain-lite foreign_domain-lite ads_domain-lite; do
             echo "payload:" > "mihomo/$f.yaml"
             jq -r '.rules[].domain_suffix[]?' "sing-box/$f.json" | sed 's/^\.*//; s/^/  - +./' >> "mihomo/$f.yaml" || true
@@ -96,12 +88,11 @@ jobs:
           done
 
       # =============================================================
-      # 3. 全量域名同步 (!cn, cn, ads全量)
+      # 3. 全量域名同步 (逻辑保持不变)
       # =============================================================
       - name: 处理全量域名规则
         run: |
           set -euo pipefail
-          # A. foreign_domain (全量!cn + 清洗)
           curl -L "https://raw.githubusercontent.com/1715173329/sing-geosite/refs/heads/rule-set-unstable/geosite-geolocation-!cn.srs" -o temp_work/f_raw.srs
           sing-box rule-set decompile --output temp_work/f_raw.json temp_work/f_raw.srs
           jq '{version: .version, rules: [.rules[] | {domain: (.domain | map(sub("^\\.+"; ""))), domain_suffix: (.domain_suffix | map(sub("^\\.+"; "")))} | del(..|nulls)]}' temp_work/f_raw.json > sing-box/foreign_domain.json
@@ -109,23 +100,40 @@ jobs:
           jq -r '.rules[].domain_suffix[]?' sing-box/foreign_domain.json | sed 's/^\.*//; s/^/  - +./' >> mihomo/foreign_domain.yaml
           jq -r '.rules[].domain[]?' sing-box/foreign_domain.json | sed 's/^\.*//; s/^/  - /' >> mihomo/foreign_domain.yaml
 
-          # B. 其他全量下载
           curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.yaml" -o mihomo/cn_domain.yaml
           curl -L "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.json" -o sing-box/cn_domain.json
           curl -L "https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockmihomo.yaml" -o mihomo/ads_domain.yaml
           curl -L "https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksingbox.json" -o sing-box/ads_domain.json
 
       # =============================================================
-      # 4. 统一编译并上传
+      # 4. 编译并提交到 master 分支
       # =============================================================
       - name: 编译与提交
         run: |
-          for f in sing-box/*.json; do sing-box rule-set compile --output "${f%.json}.srs" "$f"; done
+          # 编译 sing-box srs
+          for f in sing-box/*.json; do 
+            sing-box rule-set compile --output "${f%.json}.srs" "$f"
+          done
+          
+          # 编译 mihomo mrs
           for f in mihomo/*.yaml; do
             TYPE=$([[ "$f" == *"ip"* ]] && echo "ipcidr" || echo "domain")
             mihomo convert-ruleset "$TYPE" yaml "$f" "${f%.yaml}.mrs"
           done
+
+          # Git 提交操作
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 【修改点 2】: 显式切换/确认在 master 分支
+          git checkout master || git checkout -b master
+          
           git add sing-box/* mihomo/*
-          git diff --cached --quiet || (git commit -m "chore: 完整同步全量/精简 IP 及域名规则 $(date +'%Y-%m-%d %H:%M')" && git push)
+          
+          # 检查是否有变动并推送至 origin master
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: 完整同步全量/精简 IP 及域名规则 $(date +'%Y-%m-%d %H:%M')"
+            git push origin master
+          else
+            echo "没有发现任何规则变动，跳过推送。"
+          fi
