@@ -1,0 +1,126 @@
+name: 1715173329规则转换
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "25 1 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  convert-all:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Tools
+        run: |
+          wget https://github.com/SagerNet/sing-box/releases/download/v1.12.17/sing-box-1.12.17-linux-amd64.tar.gz
+          tar -xzf sing-box-1.12.17-linux-amd64.tar.gz
+          sudo mv sing-box-1.12.17-linux-amd64/sing-box /usr/local/bin/
+          wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz
+          gunzip mihomo-linux-amd64-v1.19.17.gz
+          chmod +x mihomo-linux-amd64-v1.19.17
+          sudo mv mihomo-linux-amd64-v1.19.17 /usr/local/bin/mihomo
+
+      - name: 1. 处理 Geosite (域名)
+        run: |
+          set -euo pipefail
+          BASE_OUT="1715173329/geosite"
+          SB_DIR="$BASE_OUT/sing-box"
+          MH_DIR="$BASE_OUT/mihomo"
+          mkdir -p "$SB_DIR" "$MH_DIR" temp_srs
+          git clone --depth 1 -b rule-set-unstable https://github.com/1715173329/sing-geosite.git raw_repo
+          cp raw_repo/*.srs temp_srs/
+          for file_path in temp_srs/*.srs; do
+            [ -e "$file_path" ] || continue
+            base_name=$(basename "$file_path" .srs)
+            [ $(stat -c%s "$file_path") -lt 100 ] && continue
+            sing-box rule-set decompile --output "temp_srs/raw.json" "$file_path"
+            jq '{version: .version, rules: [.rules[] | {domain: (if (.domain | type == "array") then (.domain | map(sub("^\\.+"; "")) | select(length > 0)) else null end), domain_suffix: (if (.domain_suffix | type == "array") then (.domain_suffix | map(sub("^\\.+"; "")) | select(length > 0)) else null end)} | del(..|nulls)]}' "temp_srs/raw.json" > "$SB_DIR/$base_name.json"
+            sing-box rule-set compile --output "$SB_DIR/$base_name.srs" "$SB_DIR/$base_name.json"
+            echo "payload:" > "$MH_DIR/$base_name.yaml"
+            jq -r '.rules[].domain_suffix[]?' "$SB_DIR/$base_name.json" 2>/dev/null | sed 's/^\.*//; s/^/  - +./' >> "$MH_DIR/$base_name.yaml" || true
+            jq -r '.rules[].domain[]?' "$SB_DIR/$base_name.json" 2>/dev/null | sed 's/^\.*//; s/^/  - /' >> "$MH_DIR/$base_name.yaml" || true
+            if [ -s "$MH_DIR/$base_name.yaml" ]; then
+              mihomo convert-ruleset domain yaml "$MH_DIR/$base_name.yaml" "$MH_DIR/$base_name.mrs" || true
+            fi
+          done
+          rm -rf raw_repo temp_srs
+
+      - name: 2. 处理 CNIP
+        run: |
+          set -euo pipefail
+          SB_DIR="1715173329/cnip/sing-box"
+          MH_DIR="1715173329/cnip/mihomo"
+          mkdir -p "$SB_DIR" "$MH_DIR" temp_ip
+          SUCCESS=false
+          URLS=("https://raw.githubusercontent.com/1715173329/IPCIDR-CHINA/master/ip.txt" "https://fastly.jsdelivr.net/gh/1715173329/IPCIDR-CHINA@master/ip.txt")
+          for url in "${URLS[@]}"; do
+            if curl -fLs "$url" -o "temp_ip/ip_raw.txt" && [ $(stat -c%s "temp_ip/ip_raw.txt") -gt 100 ]; then
+              SUCCESS=true && break
+            fi
+          done
+          if [ "$SUCCESS" = "true" ]; then
+            grep -E '^[0-9a-fA-F:./]+' "temp_ip/ip_raw.txt" | tr -d '\r' > "temp_ip/ip.txt"
+            grep "\." "temp_ip/ip.txt" > "temp_ip/ip4.txt" || true
+            grep ":" "temp_ip/ip.txt" > "temp_ip/ip6.txt" || true
+            for file in ip ip4 ip6; do
+              if [ -s "temp_ip/$file.txt" ]; then
+                jq -n --rawfile ips "temp_ip/$file.txt" '{version: 2, rules: [{ip_cidr: ($ips | split("\n") | map(select(length > 0)))}] }' > "$SB_DIR/$file.json"
+                sing-box rule-set compile --output "$SB_DIR/$file.srs" "$SB_DIR/$file.json"
+                echo "payload:" > "$MH_DIR/$file.yaml"
+                sed 's/^/  - /' "temp_ip/$file.txt" >> "$MH_DIR/$file.yaml"
+                mihomo convert-ruleset ipcidr yaml "$MH_DIR/$file.yaml" "$MH_DIR/$file.mrs"
+              fi
+            done
+          fi
+          rm -rf temp_ip
+
+      - name: 3. 上传 JSON/YAML 至 laws 分支
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          
+          # 备份当前生成的所有文件
+          mkdir -p /tmp/generated_files
+          cp -r 1715173329/ /tmp/generated_files/
+
+          # 切换 laws
+          git fetch origin laws || true
+          git checkout laws || git checkout -b laws
+
+          # 同步备份并删除二进制文件
+          rm -rf 1715173329/
+          cp -r /tmp/generated_files/1715173329/ .
+          find 1715173329 -type f \( -name "*.srs" -o -name "*.mrs" \) -delete
+
+          git add 1715173329/
+          if ! git diff --staged --quiet; then
+            git commit -m "Update: 同步 JSON 与 YAML (laws)"
+            git push origin laws
+          fi
+
+      - name: 4. 上传 SRS/MRS 至 master 分支
+        run: |
+          # 切换 master
+          git fetch origin master || true
+          git checkout master || git checkout -b master
+
+          # 还原最初生成的所有文件
+          rm -rf 1715173329/
+          cp -r /tmp/generated_files/1715173329/ .
+
+          # 删除 JSON 和 YAML，只留二进制
+          find 1715173329 -type f \( -name "*.json" -o -name "*.yaml" \) -delete
+
+          git add 1715173329/
+          if ! git diff --staged --quiet; then
+            git commit -m "Update: 同步 SRS 与 MRS (master)"
+            git push origin master
+          fi
