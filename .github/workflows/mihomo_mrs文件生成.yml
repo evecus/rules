@@ -25,32 +25,20 @@ jobs:
           chmod +x mihomo
           sudo mv mihomo /usr/local/bin/mihomo
 
-      - name: Find and convert rule files
+      - name: Convert all yaml to mrs
         run: |
-          RULE_DIR="mihomo"
-          # 只匹配 .yaml 文件，用文件名中含 _ip 还是 _domain 来判断类型
-          find "$RULE_DIR" -type f -name "*.yaml" | while read FILE; do
-            BASENAME=$(basename "$FILE")
-
-            if [[ "$BASENAME" == *_ip* ]]; then
-              TYPE="ipcidr"
-            elif [[ "$BASENAME" == *_domain* ]]; then
-              TYPE="domain"
-            else
-              echo "跳过（无法判断类型）: $FILE"
-              continue
-            fi
-
+          find mihomo -type f -name "*.yaml" | while read FILE; do
             OUTPUT="${FILE%.yaml}.mrs"
-            echo "Converting [$TYPE] $FILE → $OUTPUT"
-            mihomo convert-ruleset "$TYPE" yaml "$FILE" "$OUTPUT"
+            # 先尝试 domain，再尝试 ipcidr，哪个成功用哪个，错误全部静默
+            mihomo convert-ruleset domain yaml "$FILE" "$OUTPUT" 2>/dev/null || \
+            mihomo convert-ruleset ipcidr yaml "$FILE" "$OUTPUT" 2>/dev/null || \
+            echo "跳过（两种格式均失败）: $FILE"
           done
 
       - name: Commit and push to master
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
-          # 只 add mrs 文件，绝不动其他文件
           git add mihomo/*.mrs
           if git diff --staged --quiet; then
             echo "No changes to commit"
