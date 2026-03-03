@@ -2,8 +2,8 @@ name: 统一规则集维护中心
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "45 1 * * *"
+  #schedule:
+  #  - cron: "45 1 * * *"
 
 permissions:
   contents: write
