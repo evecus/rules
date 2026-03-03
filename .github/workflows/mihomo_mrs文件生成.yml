@@ -14,7 +14,7 @@ jobs:
       - name: Checkout master branch
         uses: actions/checkout@v4
         with:
-          ref: master        # ← 检出 master 分支
+          ref: master
           fetch-depth: 0
 
       - name: Install mihomo
@@ -27,42 +27,34 @@ jobs:
 
       - name: Find and convert rule files
         run: |
-          RULE_DIR="mihomo"   # master 分支根目录下的 mihomo/ 文件夹
-          find "$RULE_DIR" -type f \( -name "*_domain.yaml" -o -name "*_domain.text" -o -name "*_ip.yaml" -o -name "*_ip.text" \) | while read FILE; do
+          RULE_DIR="mihomo"
+          # 只匹配 .yaml 文件，用文件名中含 _ip 还是 _domain 来判断类型
+          find "$RULE_DIR" -type f -name "*.yaml" | while read FILE; do
             BASENAME=$(basename "$FILE")
-            DIRNAME=$(dirname "$FILE")
 
-            if [[ "$BASENAME" == *_domain.* ]]; then
-              TYPE="domain"
-            elif [[ "$BASENAME" == *_ip.* ]]; then
+            if [[ "$BASENAME" == *_ip* ]]; then
               TYPE="ipcidr"
+            elif [[ "$BASENAME" == *_domain* ]]; then
+              TYPE="domain"
             else
-              echo "Unknown type: $FILE"
+              echo "跳过（无法判断类型）: $FILE"
               continue
             fi
 
-            EXT="${BASENAME##*.}"
-            if [[ "$EXT" == "yaml" ]]; then
-              FORMAT="yaml"
-            elif [[ "$EXT" == "text" ]]; then
-              FORMAT="text"
-            else
-              echo "Unknown extension: $FILE"
-              continue
-            fi
-
-            OUTPUT="${FILE%.*}.mrs"
-            echo "Converting $FILE → $OUTPUT"
-            mihomo convert-ruleset "$TYPE" "$FORMAT" "$FILE" "$OUTPUT"
+            OUTPUT="${FILE%.yaml}.mrs"
+            echo "Converting [$TYPE] $FILE → $OUTPUT"
+            mihomo convert-ruleset "$TYPE" yaml "$FILE" "$OUTPUT"
           done
 
       - name: Commit and push to master
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
-          git add .
-          if git commit -m "Auto convert Mihomo rules"; then
-            git push origin master
-          else
+          # 只 add mrs 文件，绝不动其他文件
+          git add mihomo/*.mrs
+          if git diff --staged --quiet; then
             echo "No changes to commit"
+          else
+            git commit -m "Auto convert Mihomo rules"
+            git push origin master
           fi
