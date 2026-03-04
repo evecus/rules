@@ -1,8 +1,8 @@
 name: MetaCubeX规则下载
 
 on:
-  schedule:
-    - cron: '47 1 * * *'
+  #schedule:
+   # - cron: '47 1 * * *'
   workflow_dispatch:
 
 jobs:
