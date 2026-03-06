@@ -490,13 +490,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git rm -rf --cached . --quiet
+          git checkout --orphan temp-kernel
           
           git add mihomo-linux-*.gz sing-box-ref1nd-*.tar.gz
+          git commit --allow-empty-message -m "chore: 更新内核 mihomo-v${MH_VER} & sing-box-ref1nd-dev ($(date +'%Y-%m-%d'))" --amend --reset-author
 
-          if git diff --cached --quiet; then
-            echo "内核版本无变化，跳过推送。"
-          else
-            git commit -m "chore: 更新内核 mihomo-v${MH_VER} & sing-box-v${SB_VER} ($(date +'%Y-%m-%d'))"
-            git push origin kernel
-          fi
+          git push origin temp-kernel:kernel --force
