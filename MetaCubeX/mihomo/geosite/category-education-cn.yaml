@@ -12,27 +12,27 @@ payload:
     - +.chesicc.com
     - +.chesicc.net
     - +.chsi.cn
-    - +.yuketang.cn
-    - +.rainclassroom.com
-    - +.xueersi.com
-    - +.xesimg.com
-    - +.speiyou.com
     - +.shanbay.com
-    - +.yudou.cn
+    - +.baydn.com
     - +.koopass.com
     - +.koolearn.com
     - +.koocdn.com
-    - +.gfbzb.cn
-    - +.gfbzb.com
-    - +.applysquare.net
-    - +.applysquare.com
-    - +.gfbzb.net
-    - +.ketangpai.com
-    - +.pmphmooc.com
+    - +.yudou.cn
     - +.openlearning.com
     - +.mooc.cn
-    - +.qgzb.net
     - +.icourses.cn
+    - +.icourse163.org
+    - +.gfbzb.cn
+    - +.gfbzb.com
+    - +.cnmooc.org
+    - +.chinesemooc.org
+    - +.gfbzb.net
+    - +.ketangpai.com
+    - +.xueersi.com
+    - +.xesimg.com
+    - +.speiyou.com
+    - +.qgzb.net
+    - +.tongxuepie.com
     - +.zbbm.net
     - +.neea.cn
     - +.91yunxiao.com
@@ -62,13 +62,13 @@ payload:
     - +.sydw8.com
     - +.ictbda.cn
     - +.ictbda.com
-    - +.icourse163.org
+    - +.schoopia.com
     - +.xir.cn
     - +.j-test.com
     - +.nattest-china.com
-    - +.yuantiku.com
+    - +.applysquare.net
     - +.yushiyan.net
-    - +.baydn.com
+    - +.pmphmooc.com
     - +.liulishuo.com
     - +.llsapp.com
     - +.llscdn.com
@@ -89,9 +89,25 @@ payload:
     - +.zhan.com
     - +.zhihuishu.com
     - +.zjzs.net
+    - +.banmaaike.com
+    - +.xiaoyuankousuan.com
+    - +.ybccode.com
+    - +.yuanfudao.com
+    - +.yuansouti.com
+    - +.yuantiku.com
+    - +.fbstatic.cn
+    - +.fenbi.com
+    - +.fenbike.cn
+    - +.fenbike.com
+    - +.fenbilantian.cn
+    - +.fenbilantian.com
+    - +.rainclassroom.com
+    - +.yuketang.cn
     - +.17zuoye.cn
     - +.17zuoye.com
     - +.17zuoye.net
+    - +.applysquare.com
+    - +.keboyunxiao.com
     - +.hugecore.net
     - +.shareintelli.com
     - +.mojidict.com
@@ -100,35 +116,19 @@ payload:
     - +.hjfile.cn
     - +.hujiang.com
     - +.yeshj.com
-    - +.schoopia.com
-    - +.tongxuepie.com
-    - +.banmaaike.com
-    - +.xiaoyuankousuan.com
-    - +.ybccode.com
-    - +.yuanfudao.com
-    - +.yuansouti.com
-    - +.keboyunxiao.com
-    - +.fbstatic.cn
-    - +.fenbi.com
-    - +.fenbike.cn
-    - +.fenbike.com
-    - +.fenbilantian.cn
-    - +.fenbilantian.com
-    - +.chinesemooc.org
-    - +.cnmooc.org
     - +.cbern.com.cn
     - +.qgzb.gov.cn
-    - +.chinayz.com.cn
-    - +.chsi.com.cn
-    - +.ncss.org.cn
-    - +.icve.com.cn
-    - +.gfbzb.gov.cn
-    - +.zbbm.gov.cn
-    - +.gatzs.com.cn
-    - +.gfbzb.com.cn
-    - +.qgzb.com.cn
     - +.chesicc.org.cn
+    - +.chinayz.com.cn
+    - +.ncss.org.cn
+    - +.gfbzb.gov.cn
+    - +.gfbzb.com.cn
+    - +.zbbm.gov.cn
+    - +.chsi.com.cn
+    - +.gatzs.com.cn
+    - +.qgzb.com.cn
     - +.chesicc.net.cn
+    - +.icve.com.cn
     - +.chesicc.com.cn
     - +.chei.com.cn
     - +.chdi.com.cn
