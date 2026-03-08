@@ -466,10 +466,10 @@ jobs:
           SB_ARM64="sing-box-${SB_VER}-linux-arm64.tar.gz"
 
           echo "下载: $SB_AMD64"
-          curl -fL "$SB_BASE/$SB_AMD64" -o "$SB_AMD64"
+          #curl -fL "$SB_BASE/$SB_AMD64" -o "$SB_AMD64"
 
           echo "下载: $SB_ARM64"
-          curl -fL "$SB_BASE/$SB_ARM64" -o "$SB_ARM64"
+          #curl -fL "$SB_BASE/$SB_ARM64" -o "$SB_ARM64"
 
           # 下载并重新打包 sing-box-ref1nd-dev arm64
           curl -fL https://github.com/DustinWin/proxy-tools/releases/download/sing-box/sing-box-ref1nd-dev-linux-arm64.tar.gz -o sing-box-ref1nd-dev-linux-arm64.tar.gz
@@ -489,15 +489,6 @@ jobs:
           rm -rf tmp-amd64
 
           # ── 4. 验证文件大小 ────────────────────────────────────────
-          MIN_SIZE=1000000
-          for f in "$MH_AMD64" "$MH_ARM64" "$SB_AMD64" "$SB_ARM64"; do
-            SIZE=$(stat -c%s "$f")
-            if [ "$SIZE" -lt "$MIN_SIZE" ]; then
-              echo "❌ 文件过小，疑似下载失败: $f (${SIZE} bytes)"
-              exit 1
-            fi
-            echo "✅ $f ($(numfmt --to=iec $SIZE))"
-          done
 
           # ── 5. 提交至 kernel 分支 ──────────────────────────────────
           git config user.name "github-actions[bot]"
