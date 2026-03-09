@@ -2,7 +2,7 @@ payload:
     - +.ir
     - +.xn--mgba3a4f16a
     - +.xn--mgba3a4fra
-    - +.fararu.com
+    - +.srttu.edu
     - +.loxblog.com
     - +.niniweblog.com
     - +.rozblog.com
@@ -22,35 +22,6 @@ payload:
     - +.mahex.com
     - +.podro.com
     - +.tipaxco.com
-    - +.cinematicket.org
-    - +.telewebion.com
-    - +.filimo.com
-    - +.filimo.school
-    - +.aparat.com
-    - +.aparatkids.com
-    - +.aparatsport.com
-    - +.asanpardakht.com
-    - +.bitbarg.me
-    - +.zarinpal.com
-    - +.mydigipay.com
-    - +.behpardakht.com
-    - +.asanpardakht.net
-    - +.vandar.app
-    - +.vandar.io
-    - +.weswap.digital
-    - +.cdnsnapptrip.com
-    - +.snapp-box.com
-    - +.snapp.cab
-    - +.snapp.doctor
-    - +.snapp.express
-    - +.snapp.ninja
-    - +.snapp.site
-    - +.snapp.supply
-    - +.snapp.taxi
-    - +.snapp.tech
-    - +.snappfood.dev
-    - +.snapproom.com
-    - +.snapptrip.com
     - +.mellatbroker.com
     - +.ok-ex.io
     - +.talarebourse.com
@@ -86,23 +57,11 @@ payload:
     - +.ramzinex.com
     - +.tabdeal.org
     - +.tetherland.com
-    - +.agri-bank.com
-    - +.ansarbank.com
-    - +.blubank.com
-    - +.hibank24.com
-    - +.parsian-bank.com
-    - +.hawzahnews.com
-    - +.sb24.com
-    - +.faradars.org
-    - +.toplearn.com
-    - +.iranlms.org
-    - +.webinarplus.online
-    - +.quera.org
+    - +.agrieng.org
     - +.asriran.com
     - +.eghtesadnews.com
-    - +.blogfa.com
-    - +.blogsky.com
-    - +.snappcloud.io
+    - +.fararu.com
+    - +.hawzahnews.com
     - +.iraneconomist.com
     - +.mehrnews.com
     - +.parsine.com
@@ -122,33 +81,42 @@ payload:
     - +.khorasannews.com
     - +.resalat-news.com
     - +.tehrantimes.com
-    - +.bale.ai
-    - +.eitaa.com
-    - +.gap.im
-    - +.gaplication.com
-    - +.niniban.com
-    - +.ninisite.com
+    - +.cinematicket.org
+    - +.asanpardakht.com
+    - +.bitbarg.me
+    - +.zarinpal.com
+    - +.mydigipay.com
+    - +.behpardakht.com
+    - +.asanpardakht.net
+    - +.vandar.app
     - +.virasty.com
-    - +.adivery.com
-    - +.kaprila.com
-    - +.najva.com
-    - +.sabavision.com
-    - +.yektanet.com
+    - +.weswap.digital
+    - +.ninisite.com
     - +.sanjesh.org
     - +.sharif.edu
-    - +.srttu.edu
+    - +.blogfa.com
+    - +.vandar.io
+    - +.blogsky.com
+    - +.telewebion.com
+    - +.aparat.com
+    - +.aparatkids.com
+    - +.aparatsport.com
+    - +.filimo.com
+    - +.filimo.school
+    - +.faradars.org
+    - +.toplearn.com
+    - +.iranlms.org
+    - +.webinarplus.online
+    - +.quera.org
+    - +.bimeonline.com
+    - +.dana-insurance.com
+    - +.dayins.com
+    - +.bimehasia.com
+    - +.bimeh.com
+    - +.novininsurance.com
+    - +.mellatinsurance.com
     - +.sinainsurance.com
-    - +.digi-kala.com
-    - +.janebi.com
-    - +.sheypoor.com
-    - +.torob.com
-    - +.digikala.com
-    - +.digikalabusiness.com
-    - +.digikalajet.com
-    - +.digistyle.com
-    - +.divar.cloud
-    - +.divarcdn.com
-    - +.agrieng.org
+    - +.niniban.com
     - +.abrha.net
     - +.afranet.com
     - +.arvancloud.com
@@ -177,10 +145,42 @@ payload:
     - +.tap30.services
     - +.tap33.me
     - +.tapsi.cab
-    - +.bimeonline.com
-    - +.dana-insurance.com
-    - +.dayins.com
-    - +.bimehasia.com
-    - +.bimeh.com
-    - +.novininsurance.com
-    - +.mellatinsurance.com
+    - +.cdnsnapptrip.com
+    - +.snapp-box.com
+    - +.snapp.cab
+    - +.snapp.doctor
+    - +.snapp.express
+    - +.snapp.ninja
+    - +.snapp.site
+    - +.snapp.supply
+    - +.snapp.taxi
+    - +.snapp.tech
+    - +.snappcloud.io
+    - +.snappfood.dev
+    - +.snapproom.com
+    - +.snapptrip.com
+    - +.adivery.com
+    - +.kaprila.com
+    - +.najva.com
+    - +.sabavision.com
+    - +.yektanet.com
+    - +.agri-bank.com
+    - +.ansarbank.com
+    - +.blubank.com
+    - +.hibank24.com
+    - +.parsian-bank.com
+    - +.sb24.com
+    - +.digi-kala.com
+    - +.janebi.com
+    - +.sheypoor.com
+    - +.torob.com
+    - +.digikala.com
+    - +.digikalabusiness.com
+    - +.digikalajet.com
+    - +.digistyle.com
+    - +.divar.cloud
+    - +.divarcdn.com
+    - +.bale.ai
+    - +.eitaa.com
+    - +.gap.im
+    - +.gaplication.com
