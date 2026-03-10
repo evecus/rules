@@ -3,8 +3,9 @@
   "rules": [
     {
       "domain_suffix": [
-        "analytics.tiktok.com",
-        "htrace.wetvinfo.com"
+        "iplark.com",
+        "ipw.cn",
+        "whois.pconline.com.cn"
       ]
     }
   ]

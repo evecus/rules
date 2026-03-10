@@ -3,20 +3,10 @@ payload:
     - hammerandchisel.ssl.zendesk.com
     - +.keybase.io
     - +.keybaseapi.com
-    - +.signal.art
-    - +.signal.group
-    - +.signal.link
-    - +.signal.me
-    - +.signal.tube
-    - +.signal.org
-    - +.signalusers.org
-    - +.whispersystems.org
-    - +.temp-mail.org
-    - +.viber.com
-    - +.viber.co
-    - +.viber.me
-    - +.vbcdn.com
-    - +.vbcdn.net
+    - +.fbmessenger.com
+    - +.m.me
+    - +.messenger.com
+    - +.nbabot.net
     - +.wa.me
     - +.whatsapp-plus.info
     - +.whatsapp-plus.me
@@ -28,48 +18,6 @@ payload:
     - +.whatsapp.org
     - +.whatsapp.tv
     - +.whatsappbrand.com
-    - +.linemobile.com
-    - +.lineshoppingseller.com
-    - +.line-apps-beta.com
-    - +.line-apps-rc.com
-    - +.line-apps.com
-    - +.line-beta.me
-    - +.line-cdn.net
-    - +.line.biz
-    - +.nhncorp.jp
-    - +.lin.ee
-    - +.line-scdn.net
-    - +.linecorp.com
-    - +.linefriends.com
-    - +.linetv.tw
-    - +.linegame.jp
-    - +.gcld-line.com
-    - +.linemyshop.com
-    - +.line.me
-    - +.mail.com
-    - +.ui-portal.de
-    - +.uicdn.com
-    - +.uimserv.net
-    - +.pm.me
-    - +.proton.me
-    - +.protonmail.ch
-    - +.protonmail.com
-    - +.protonstatus.com
-    - +.protontech.ch
-    - +.protonvpn.ch
-    - +.protonvpn.com
-    - +.protonweb.com
-    - +.slack-core.com
-    - +.slack-edge.com
-    - +.slack-files.com
-    - +.slack-imgs.com
-    - +.slack-msgs.com
-    - +.slack-redir.net
-    - +.slack.com
-    - +.slackb.com
-    - +.slackcertified.com
-    - +.slackdemo.com
-    - +.slackhq.com
     - +.clubhouse.com
     - +.clubhouseapi.com
     - +.joinclubhouse.com
@@ -99,11 +47,52 @@ payload:
     - +.watchanimeattheoffice.com
     - +.discordapp.io
     - +.discordcdn.com
+    - +.linemobile.com
+    - +.lineshoppingseller.com
+    - +.line-apps-beta.com
+    - +.line-apps-rc.com
+    - +.line-apps.com
+    - +.line-beta.me
+    - +.line-cdn.net
+    - +.line.biz
+    - +.nhncorp.jp
+    - +.lin.ee
+    - +.line-scdn.net
+    - +.linecorp.com
+    - +.linefriends.com
+    - +.linetv.tw
+    - +.linegame.jp
+    - +.gcld-line.com
+    - +.linemyshop.com
+    - +.line.me
+    - +.mail.com
+    - +.ui-portal.de
+    - +.uicdn.com
+    - +.uimserv.net
+    - +.signal.art
+    - +.signal.group
+    - +.signal.link
+    - +.signal.me
+    - +.signal.tube
+    - +.signal.org
+    - +.signalusers.org
+    - +.whispersystems.org
+    - +.slack-core.com
+    - +.slack-edge.com
+    - +.slack-files.com
+    - +.slack-imgs.com
+    - +.slack-msgs.com
+    - +.slack-redir.net
+    - +.slack.com
+    - +.slackb.com
+    - +.slackcertified.com
+    - +.slackdemo.com
+    - +.slackhq.com
+    - +.freenode.net
     - +.intercom.com
     - +.intercom.io
     - +.intercomassets.com
     - +.intercomcdn.com
-    - +.freenode.net
     - +.arewereadyyet.com
     - +.cinny.in
     - +.element.io
@@ -113,10 +102,15 @@ payload:
     - +.modular.im
     - +.riot.im
     - +.vector.im
-    - +.fbmessenger.com
-    - +.m.me
-    - +.messenger.com
-    - +.nbabot.net
+    - +.pm.me
+    - +.proton.me
+    - +.protonmail.ch
+    - +.protonmail.com
+    - +.protonstatus.com
+    - +.protontech.ch
+    - +.protonvpn.ch
+    - +.protonvpn.com
+    - +.protonweb.com
     - +.cdn-telegram.org
     - +.comments.app
     - +.contest.com
@@ -137,6 +131,12 @@ payload:
     - +.ton.org
     - +.tx.me
     - +.usercontent.dev
+    - +.temp-mail.org
+    - +.viber.com
+    - +.viber.co
+    - +.viber.me
+    - +.vbcdn.com
+    - +.vbcdn.net
     - +.linefriends.com.tw
     - +.line.naver.jp
     - +.s-bid.rmp.rakuten.com

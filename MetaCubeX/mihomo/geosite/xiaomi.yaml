@@ -14,7 +14,7 @@ payload:
     - +.xiaomicp.com
     - +.xiaomidns.cn
     - +.xiaomidns.com
-    - +.miot-spec.org
+    - +.xiaomimimo.com
     - +.xiaomidns.net
     - +.xiaomiev.com
     - +.xiaomiinc.cn
@@ -23,7 +23,7 @@ payload:
     - +.xiaomiinc.net
     - +.xiaomimobile.com
     - +.xiaominr.com
-    - +.xiaomimimo.com
+    - +.xiaoaiassist.com
     - +.mi-idc.com
     - +.xiaomi.net
     - +.xiaomisa.net
@@ -38,10 +38,10 @@ payload:
     - +.duokanbox.com
     - +.xiaomiyoupin.com
     - +.youpin.cn
-    - +.xiaoaiassist.com
+    - +.miaibox.com
     - +.zmifi.com
     - +.saxyit.com
-    - +.miaibox.com
+    - +.miot-spec.org
     - +.youpin.com.cn
     - +.xiaomiinc.com.cn
     - +.xiaomidns.com.cn
