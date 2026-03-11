@@ -12,7 +12,6 @@ payload:
     - t21ipau.nikkei.co.jp
     - ulrichsweb.serialssolutions.com
     - wrds-www.wharton.upenn.edu
-    - imperial.insendi.com
     - scholar.google.ae
     - scholar.google.at
     - scholar.google.be
@@ -89,11 +88,10 @@ payload:
     - scholar.google.sk
     - scholar.googleusercontent.com
     - scholar.l.google.com
+    - imperial.insendi.com
     - +.mit
-    - +.ac.uk
-    - +.amamanualofstyle.com
-    - +.aclweb.org
-    - +.acm.org
+    - +.sipriyearbook.org
+    - +.ieee-isto.org
     - +.acs.org
     - +.agu.org
     - +.aiaa.org
@@ -103,7 +101,6 @@ payload:
     - +.alexanderstreet.com
     - +.alphaxiv.org
     - +.altmetric.com
-    - +.vtsociety.org
     - +.ams.org
     - +.analytictech.com
     - +.anatomy.tv
@@ -168,11 +165,14 @@ payload:
     - +.hindawi.com
     - +.hotcrp.com
     - +.icevirtuallibrary.com
-    - +.technologyandsociety.org
+    - +.zlibcdn.com
+    - +.zlib.life
+    - +.z-library.se
+    - +.z-library.sk
     - +.igi-global.com
     - +.igpublish.com
-    - +.signalprocessingsociety.org
-    - +.photonicssociety.org
+    - +.booksc.xyz
+    - +.z-lib.gl
     - +.informs.org
     - +.ioinformatics.org
     - +.iop.org
@@ -184,11 +184,11 @@ payload:
     - +.jmlr.org
     - +.jneurosci.org
     - +.jove.com
-    - +.mtt.org
+    - +.z-lib.gd
     - +.jstor.org
     - +.karger.com
     - +.kuke.com
-    - +.itsoc.org
+    - +.z-lib.fm
     - +.lexisnexis.com
     - +.literatumonline.com
     - +.mdpi.com
@@ -196,16 +196,16 @@ payload:
     - +.morganclaypool.com
     - +.nature.com
     - +.naturemag.org
-    - +.ieeesystemscouncil.org
+    - +.singlelogin.site
     - +.nejm.org
     - +.neurology.org
-    - +.ieeesmc.org
+    - +.singlelogin.re
     - +.oecd-ilibrary.org
     - +.openreview.net
     - +.optica.org
     - +.osapublishing.org
     - +.ovid.com
-    - +.ieeeoes.org
+    - +.imperialbusiness.school
     - +.physiology.org
     - +.plos.org
     - +.pnas.org
@@ -249,11 +249,8 @@ payload:
     - +.worldscientific.com
     - +.yale.edu
     - +.zenodo.org
-    - +.clarivate.com
-    - +.webofknowledge.com
-    - +.webofscience.com
-    - +.newisiknowledge.com
-    - +.isiknowledge.com
+    - +.apa.org
+    - +.psyccareers.com
     - +.sciencedirect.com
     - +.sciencedirectassets.com
     - +.apress.com
@@ -261,71 +258,6 @@ payload:
     - +.springerlink.com
     - +.springernature.com
     - +.wkap.nl
-    - +.serialssolutions.com
-    - +.proquest.com
-    - +.sci-hub.se
-    - +.sci-hub.ee
-    - +.sci-hub.st
-    - +.peerj.com
-    - +.ieeenano.org
-    - +.1lib.sk
-    - +.bookshome.info
-    - +.z-lib.org
-    - +.1lib.domains
-    - +.1lib.education
-    - +.1lib.eu
-    - +.1lib.limited
-    - +.1lib.pl
-    - +.ieeemagnetics.org
-    - +.1lib.to
-    - +.1lib.tw
-    - +.2lib.org
-    - +.3lib.net
-    - +.art1lib.com
-    - +.b-ok.africa
-    - +.booksc.org
-    - +.b-ok.cc
-    - +.b-ok.global
-    - +.b-ok.org
-    - +.book4you.org
-    - +.bookfi.net
-    - +.booksc.eu
-    - +.booksc.me
-    - +.b-ok.asia
-    - +.1lib.cz
-    - +.libsolutions.net
-    - +.bookshome.net
-    - +.bookshome.world
-    - +.de1lib.org
-    - +.zlibcdn2.com
-    - +.hk1lib.org
-    - +.libsolutions.app
-    - +.libsolutions.domains
-    - +.1lib.cloud
-    - +.ma1lib.org
-    - +.sg1lib.org
-    - +.singlelogin.app
-    - +.singlelogin.me
-    - +.singlelogin.re
-    - +.singlelogin.site
-    - +.z-lib.fm
-    - +.z-lib.gd
-    - +.z-lib.gl
-    - +.booksc.xyz
-    - +.z-library.sk
-    - +.z-library.se
-    - +.zlib.life
-    - +.zlibcdn.com
-    - +.ieeedeis.org
-    - +.ac.ir
-    - +.edu.ir
-    - +.iranlms.ir
-    - +.jtt.ir
-    - +.sanjesh.org
-    - +.sharif.edu
-    - +.sharif.ir
-    - +.srttu.edu
-    - +.ieeecss.org
     - +.oxfordpoliticstrove.com
     - +.oxfordmedicine.com
     - +.cambridgeschoolshakespeare.com
@@ -334,17 +266,17 @@ payload:
     - +.universitypressscholarship.com
     - +.ouplaw.com
     - +.ukwhoswho.com
-    - +.imperialbusiness.school
-    - +.sipriyearbook.org
-    - +.oxfordwesternmusic.com
+    - +.peerj.com
+    - +.acm.org
+    - +.veryshortintroductions.com
     - +.oxfordfirstsource.com
     - +.oxfordscholarlyeditions.com
-    - +.ieeecsc.org
+    - +.amamanualofstyle.com
     - +.epigeum.com
     - +.oxfordhandbooks.com
     - +.omscr.com
     - +.oxfordaasc.com
-    - +.veryshortintroductions.com
+    - +.oxfordwesternmusic.com
     - +.oxfordscholarship.com
     - +.oup.com
     - +.oxfordartonline.com
@@ -356,28 +288,16 @@ payload:
     - +.oxfordbibliographies.com
     - +.cambridge.org
     - +.oxfordmusiconline.com
-    - +.aacrjournals.org
+    - +.ac.uk
     - +.oxfordre.com
     - +.oxfordreference.com
     - +.anb.org
-    - +.ieeeaps.org
-    - +.ieee-uffc.org
-    - +.ieee-tems.org
-    - +.ieee-sensors.org
-    - +.ieee-ras.org
-    - +.ieee-pes.org
-    - +.ieee-pels.org
-    - +.mit.edu
-    - +.mit.net
-    - +.mitpressjournals.org
-    - +.tandfonline.com
-    - +.taylorandfrancis.com
-    - +.taylorfrancis.com
-    - +.ieee-npss.org
-    - +.apa.org
-    - +.psyccareers.com
-    - +.doi.org
-    - +.doi.info
+    - +.singlelogin.me
+    - +.singlelogin.app
+    - +.sg1lib.org
+    - +.ma1lib.org
+    - +.1lib.cloud
+    - +.libsolutions.domains
     - +.cell.com
     - +.clinicalkey.com
     - +.els-cdn.com
@@ -392,6 +312,14 @@ payload:
     - +.reaxys.com
     - +.scival.com
     - +.scopus.com
+    - +.aclweb.org
+    - +.mit.edu
+    - +.mit.net
+    - +.mitpressjournals.org
+    - +.tandfonline.com
+    - +.taylorandfrancis.com
+    - +.taylorfrancis.com
+    - +.libsolutions.app
     - +.ieee.org
     - +.ieee.tv
     - +.tryengineering.org
@@ -411,7 +339,7 @@ payload:
     - +.ieeeday.org
     - +.datasheets360.com
     - +.globalspec.com
-    - +.ieee-isto.org
+    - +.aacrjournals.org
     - +.techstreet.com
     - +.computer.org
     - +.comsoc.org
@@ -424,19 +352,91 @@ payload:
     - +.ieee-edusociety.org
     - +.ieee-ies.org
     - +.ieee-ims.org
-    - +.amdigital.co.uk
-    - +.lawdata.com.tw
-    - +.sci-hub.mksa.top
-    - +.dlib.eastview.com
-    - +.acaric.co.jp
-    - +.academic.eb.com
-    - +.dln1.ncdn.ec
-    - +.tandf.co.uk
-    - +.sci.hubg.org
-    - +.sci-hub.it.nf
-    - +.nii.ac.jp
-    - +.ncl.edu.tw
-    - +.icsd.fiz-karlsruhe.de
+    - +.ieee-npss.org
+    - +.ieee-pels.org
+    - +.ieee-pes.org
+    - +.ieee-ras.org
+    - +.ieee-sensors.org
+    - +.ieee-tems.org
+    - +.ieee-uffc.org
+    - +.ieeeaps.org
+    - +.ieeecsc.org
+    - +.ieeecss.org
+    - +.ieeedeis.org
+    - +.ieeemagnetics.org
+    - +.ieeenano.org
+    - +.ieeeoes.org
+    - +.ieeesmc.org
+    - +.ieeesystemscouncil.org
+    - +.itsoc.org
+    - +.mtt.org
+    - +.photonicssociety.org
+    - +.signalprocessingsociety.org
+    - +.technologyandsociety.org
+    - +.vtsociety.org
+    - +.serialssolutions.com
+    - +.proquest.com
+    - +.sci-hub.se
+    - +.sci-hub.ee
+    - +.sci-hub.st
+    - +.hk1lib.org
+    - +.zlibcdn2.com
+    - +.de1lib.org
+    - +.ac.ir
+    - +.edu.ir
+    - +.iranlms.ir
+    - +.jtt.ir
+    - +.sanjesh.org
+    - +.sharif.edu
+    - +.sharif.ir
+    - +.srttu.edu
+    - +.bookshome.world
+    - +.clarivate.com
+    - +.webofknowledge.com
+    - +.webofscience.com
+    - +.newisiknowledge.com
+    - +.isiknowledge.com
+    - +.doi.org
+    - +.doi.info
+    - +.bookshome.info
+    - +.z-lib.org
+    - +.1lib.domains
+    - +.1lib.education
+    - +.1lib.eu
+    - +.1lib.limited
+    - +.1lib.pl
+    - +.1lib.sk
+    - +.1lib.to
+    - +.1lib.tw
+    - +.2lib.org
+    - +.3lib.net
+    - +.art1lib.com
+    - +.b-ok.africa
+    - +.booksc.org
+    - +.b-ok.cc
+    - +.b-ok.global
+    - +.b-ok.org
+    - +.book4you.org
+    - +.bookfi.net
+    - +.booksc.eu
+    - +.booksc.me
+    - +.b-ok.asia
+    - +.1lib.cz
+    - +.libsolutions.net
+    - +.bookshome.net
     - +.infolinker.com.tw
+    - +.sci-hub.mksa.top
+    - +.sci-hub.it.nf
+    - +.tandf.co.uk
+    - +.dln1.ncdn.ec
+    - +.ncl.edu.tw
+    - +.sci.hubg.org
+    - +.dlib.eastview.com
+    - +.nii.ac.jp
+    - +.lawdata.com.tw
+    - +.academic.eb.com
     - +.hanzhen.xmulib.org
+    - +.icsd.fiz-karlsruhe.de
+    - +.amdigital.co.uk
+    - +.acaric.co.jp
     - +.jstage.jst.go.jp
