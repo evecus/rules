@@ -1,5 +1,6 @@
 payload:
   - +.anthropic.com
+  - +.clau.de
   - +.claude.ai
   - +.claude.com
   - +.claudemcpclient.com
