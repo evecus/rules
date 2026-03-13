@@ -2,8 +2,8 @@ payload:
     - +.viju.ru
     - +.amediateka.ru
     - +.cdnvideo.ru
-    - +.rtbcdn.ru
-    - +.kinopoisk.ru
+    - +.wink.ru
+    - +.restream-media.net
     - +.ivi.ru
     - +.premier.one
     - +.smotreshka.tv
@@ -12,11 +12,11 @@ payload:
     - +.kinorium.com
     - +.trbcdn.net
     - +.24h.tv
-    - +.playfamily.ru
-    - +.okko.sport
-    - +.okko.tv
-    - +.restream-media.net
-    - +.wink.ru
     - +.rutube.ru
     - +.rutubelist.ru
+    - +.rtbcdn.ru
+    - +.kinopoisk.ru
+    - +.okko.tv
+    - +.playfamily.ru
+    - +.okko.sport
     - +.kinopoisk-ru.clstorage.net
