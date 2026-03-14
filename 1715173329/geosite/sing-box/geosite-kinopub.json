@@ -3,6 +3,7 @@
   "rules": [
     {
       "domain_suffix": [
+        "ahc.ovh",
         "cdn-service.space",
         "cdn2cdn.com",
         "cdn2site.com",
