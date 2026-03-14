@@ -481,13 +481,7 @@ jobs:
           tar -czf sing-box-ref1nd-stable-linux-arm64.tar.gz -C tmp-arm64 sing-box
           rm -rf tmp-arm64
 
-          # 下载并重新打包 sing-box-ref1nd-dev amd64
-          curl -fL https://github.com/DustinWin/proxy-tools/releases/download/sing-box/sing-box-ref1nd-stable-linux-amd64-v1.tar.gz -o sing-box-ref1nd-stable-linux-amd64-v1.tar.gz
-          mkdir -p tmp-amd64
-          tar -xzf sing-box-ref1nd-stable-linux-amd64-v1.tar.gz -C tmp-amd64
-          find tmp-amd64 -type f -not -name "*.md" | head -1 | xargs -I{} mv {} tmp-amd64/sing-box
-          tar -czf sing-box-ref1nd-stable-linux-amd64-v1.tar.gz -C tmp-amd64 sing-box
-          rm -rf tmp-amd64
+      
 
           # ── 4. 验证文件大小 ────────────────────────────────────────
 
@@ -496,6 +490,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git checkout --orphan temp-kernel
-          git add mihomo-linux-*.gz sing-box-ref1nd-*.tar.gz
+          git add mihomo-linux-*.gz
           git commit -m "chore: 更新内核 mihomo-v${MH_VER} & sing-box-ref1nd-dev ($(date +'%Y-%m-%d'))"
           git push origin temp-kernel:kernel --force
