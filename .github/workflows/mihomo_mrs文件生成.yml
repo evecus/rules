@@ -11,44 +11,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout master branch (仅 mihomo 目录)
+      - name: Checkout master branch
         uses: actions/checkout@v4
         with:
           ref: master
-          fetch-depth: 0
-          sparse-checkout: mihomo
-          sparse-checkout-cone-mode: false
+          # 删掉了 sparse-checkout 相关的配置，确保整个仓库可见
 
       - name: Install mihomo
         run: |
+          # 确保下载的是正确的版本
           wget https://github.com/MetaCubeX/mihomo/releases/download/v1.19.17/mihomo-linux-amd64-v1.19.17.gz
           gunzip mihomo-linux-amd64-v1.19.17.gz
-          mv mihomo-linux-amd64-v1.19.17 mihomo
-          chmod +x mihomo
-          sudo mv mihomo /usr/local/bin/mihomo
+          mv mihomo-linux-amd64-v1.19.17 mihomo_bin
+          chmod +x mihomo_bin
+          sudo mv mihomo_bin /usr/local/bin/mihomo
 
-      - name: Convert all yaml to mrs
+      - name: Convert YAML to MRS
         run: |
-          # 2. 检查是否有 yaml 文件
-          FILES=$(find mihomo -type f -name "*.yaml")
-          if [ -z "$FILES" ]; then
-            echo "错误: 在 mihomo 目录中未找到任何 .yaml 文件"
-            ls -R mihomo
+          # 先确认 mihomo 文件夹到底在哪
+          echo "当前工作目录内容："
+          ls -R
+          
+          # 如果你的 yaml 文件就在仓库根目录的 mihomo 文件夹里：
+          if [ ! -d "mihomo" ]; then
+            echo "错误：仓库中不存在 mihomo 文件夹！"
             exit 1
           fi
 
-          # 3. 开始转换（移除 2>/dev/null 暴露错误）
-          echo "$FILES" | while read -r FILE; do
+          find mihomo -type f -name "*.yaml" | while read -r FILE; do
             OUTPUT="${FILE%.yaml}.mrs"
-            echo "正在转换: $FILE -> $OUTPUT"
-            
-            # 尝试作为 domain 转换，失败则尝试 ipcidr
-            if ! mihomo convert-ruleset domain yaml "$FILE" "$OUTPUT"; then
-              echo "$FILE 不是 domain 格式，尝试 ipcidr..."
-              if ! mihomo convert-ruleset ipcidr yaml "$FILE" "$OUTPUT"; then
-                echo "警告: $FILE 转换完全失败"
-                rm -f "$OUTPUT" # 删除可能产生的空文件
-              fi
+            echo "正在处理: $FILE"
+            # 尝试 domain 格式
+            if ! mihomo convert-ruleset domain yaml "$FILE" "$OUTPUT" 2>/dev/null; then
+                # 失败则尝试 ipcidr 格式
+                if ! mihomo convert-ruleset ipcidr yaml "$FILE" "$OUTPUT" 2>/dev/null; then
+                    echo "跳过 (格式不匹配): $FILE"
+                fi
             fi
           done
 
@@ -57,12 +55,11 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
           
-          # 检查文件是否真的存在
-          ls -lh mihomo/*.mrs || echo "依旧没有生成 mrs 文件"
-          
+          # 强制添加所有生成的 mrs 文件
           git add mihomo/*.mrs
+          
           if git diff --staged --quiet; then
-            echo "没有检测到文件变化，跳过提交"
+            echo "没有文件变动"
           else
             git commit -m "Auto convert Mihomo rules"
             git push origin master
