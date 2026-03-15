@@ -29,26 +29,44 @@ jobs:
 
       - name: Convert all yaml to mrs
         run: |
-          find mihomo -type f -name "*.yaml" | while read FILE; do
+          # 1. 确认 mihomo 是否安装成功
+          mihomo -v || { echo "Mihomo 未安装或无法运行"; exit 1; }
+
+          # 2. 检查是否有 yaml 文件
+          FILES=$(find mihomo -type f -name "*.yaml")
+          if [ -z "$FILES" ]; then
+            echo "错误: 在 mihomo 目录中未找到任何 .yaml 文件"
+            ls -R mihomo
+            exit 1
+          fi
+
+          # 3. 开始转换（移除 2>/dev/null 暴露错误）
+          echo "$FILES" | while read -r FILE; do
             OUTPUT="${FILE%.yaml}.mrs"
-            mihomo convert-ruleset domain yaml "$FILE" "$OUTPUT" 2>/dev/null || \
-            mihomo convert-ruleset ipcidr yaml "$FILE" "$OUTPUT" 2>/dev/null || \
-            echo "跳过（两种格式均失败）: $FILE"
+            echo "正在转换: $FILE -> $OUTPUT"
+            
+            # 尝试作为 domain 转换，失败则尝试 ipcidr
+            if ! mihomo convert-ruleset domain yaml "$FILE" "$OUTPUT"; then
+              echo "$FILE 不是 domain 格式，尝试 ipcidr..."
+              if ! mihomo convert-ruleset ipcidr yaml "$FILE" "$OUTPUT"; then
+                echo "警告: $FILE 转换完全失败"
+                rm -f "$OUTPUT" # 删除可能产生的空文件
+              fi
+            fi
           done
 
-      - name: Commit and push to master
+      - name: Commit and push
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
           
-          # 仅添加新生成或修改的文件，不要用 git add .
-          git add mihomo/*.mrs
+          # 检查文件是否真的存在
+          ls -lh mihomo/*.mrs || echo "依旧没有生成 mrs 文件"
           
+          git add mihomo/*.mrs
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "没有检测到文件变化，跳过提交"
           else
-            # 这里的 commit 会包含 delete 标记，
-            # 如果你发现还是有 delete，尝试执行 git checkout mihomo/*.mrs 恢复误删
             git commit -m "Auto convert Mihomo rules"
             git push origin master
           fi
